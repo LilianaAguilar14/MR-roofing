@@ -23,6 +23,7 @@ import { MRRoofingLogo } from "@/components/logo";
 
 export default function MRRoofingWebsite() {
   const [activeSection, setActiveSection] = useState("home");
+  const [submitted, setSubmitted] = useState(false); // <-- Agrega este estado
 
   const navigation = [
     { id: "home", label: "Home", icon: Home },
@@ -116,6 +117,35 @@ export default function MRRoofingWebsite() {
       image: "/home7.jpeg",
     },
   ];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const firstName = form.get("firstName");
+    const lastName = form.get("lastName");
+    const email = form.get("email");
+    const phone = form.get("phone");
+    const message = form.get("message");
+
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, phone, message }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+        e.target.reset();
+      } else {
+        alert("Error: " + (result?.error || "Error desconocido"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al enviar el formulario");
+    }
+  };
 
   const renderHome = () => (
     <div className="space-y-0">
@@ -524,9 +554,6 @@ export default function MRRoofingWebsite() {
                 </div>
               </div>
               <div className="space-y-2">
-                <p className="text-2xl font-bold text-blue-600">
-                  Office: (516) 624-0503
-                </p>
                 <p className="text-xl font-semibold text-blue-600">
                   Cell: (917) 414-6613
                 </p>
@@ -544,7 +571,7 @@ export default function MRRoofingWebsite() {
                 </div>
               </div>
               <p className="text-xl font-semibold text-blue-600">
-                matias.783nz@gmail.com
+                matias.73cruz@gmail.com
               </p>
             </Card>
 
@@ -572,77 +599,83 @@ export default function MRRoofingWebsite() {
             <h3 className="text-3xl font-bold text-gray-900 mb-8">
               Request Free Estimate
             </h3>
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            {submitted ? (
+              <div className="text-green-600 text-xl font-semibold text-center py-8">
+                Message sent successfully! We will contact you soon.
+              </div>
+            ) : (
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      name="firstName"
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="John"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      name="lastName"
+                      type="text"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Doe"
+                      required
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name
+                    Email
                   </label>
                   <input
-                    type="text"
+                    name="email"
+                    type="email"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="John"
+                    placeholder="john@example.com"
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name
+                    Phone
                   </label>
                   <input
-                    type="text"
+                    name="phone"
+                    type="tel"
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Doe"
+                    placeholder="(555) 123-4567"
+                    required
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="(555) 123-4567"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Service Needed
-                </label>
-                <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option>Select a service</option>
-                  <option>Slate Roofing</option>
-                  <option>Tile Roofing</option>
-                  <option>Cedar Wood Roofing & Siding</option>
-                  <option>Copper Gutter Systems</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Project Details
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Tell us about your roofing project..."
-                ></textarea>
-              </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl text-lg font-semibold">
-                Send Message
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </form>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Project Details
+                  </label>
+                  <textarea
+                    name="message"
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Tell us about your roofing project..."
+                    required
+                  ></textarea>
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl text-lg font-semibold"
+                >
+                  Send Message
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </form>
+            )}
           </Card>
         </div>
       </section>
@@ -658,12 +691,7 @@ export default function MRRoofingWebsite() {
             protection for your property.
           </p>
           <div className="flex justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg"
-            >
-              Call Office: (516) 624-0503
-            </Button>
+            
             <Button
               size="lg"
               variant="outline"
@@ -779,17 +807,14 @@ export default function MRRoofingWebsite() {
             <div>
               <h4 className="text-lg font-semibold mb-6">Contact Info</h4>
               <ul className="space-y-3 text-gray-400">
-                <li className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  Office: (516) 624-0503
-                </li>
+                
                 <li className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
                   Cell: (917) 414-6613
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  matias.783nz@gmail.com
+                  matias.73cruz@gmail.com
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
