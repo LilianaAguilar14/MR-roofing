@@ -126,7 +126,8 @@ export default function MRRoofingWebsite() {
             src="/home2.jpg"
             alt="Premium roofing work by M&R Roofing"
             fill
-            className=""
+            priority
+            className="object-cover w-full h-full"
           />
           <div className="absolute inset-0 bg-gradient-to-r"></div>
         </div>
